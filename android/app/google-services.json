@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "485522849232",
+    "project_id": "liftsync-b1a80",
+    "storage_bucket": "liftsync-b1a80.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:485522849232:android:f5b96364e721951f780dd5",
+        "android_client_info": {
+          "package_name": "com.example.liftsync"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDDr009WfJPR_yeh4fZZ1vwWrgXZQdmTy8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
