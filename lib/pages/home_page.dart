@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:liftsync/pages/add_exercises_page.dart';
 import 'package:liftsync/pages/add_template_page.dart';
 
 import 'profile_page.dart';
@@ -107,6 +108,11 @@ class _HomePageState extends State<HomePage> {
                 MaterialPageRoute(builder: (context) => ProfilePage()),
               );
               break;
+            case 3:
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AddExercisesPage()),
+              );
           }
         },
       ),

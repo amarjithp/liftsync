@@ -13,7 +13,8 @@ class AddExercisesPage extends StatefulWidget {
 
 class _AddExercisesPageState extends State<AddExercisesPage> {
   List<Map<String, dynamic>> exercises = [];
-  List<String> selectedExercises = [];
+  List<String> _selectedExercises = [];
+
 
   @override
   void initState() {
@@ -28,12 +29,12 @@ class _AddExercisesPageState extends State<AddExercisesPage> {
     });
   }
 
-  void _toggleSelection(String name) {
+  void _toggleSelection(String exerciseName) {
     setState(() {
-      if (selectedExercises.contains(name)) {
-        selectedExercises.remove(name);
+      if (_selectedExercises.contains(exerciseName)) {
+        _selectedExercises.remove(exerciseName);
       } else {
-        selectedExercises.add(name);
+        _selectedExercises.add(exerciseName);
       }
     });
   }
@@ -61,7 +62,15 @@ class _AddExercisesPageState extends State<AddExercisesPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Exercises'),
-        actions: [
+        actions: _selectedExercises.isNotEmpty
+            ? [
+          IconButton(
+            icon: Icon(Icons.check),
+            onPressed: () {
+              Navigator.pop(context, _selectedExercises);
+            },
+          ),
+        ] :[
           IconButton(icon: Icon(Icons.search), onPressed: _showSearch),
           IconButton(icon: Icon(Icons.add), onPressed: _navigateToDefineExercise),
         ],
@@ -74,7 +83,7 @@ class _AddExercisesPageState extends State<AddExercisesPage> {
             leading: Icon(Icons.fitness_center),
             title: Text(exercise['name']),
             subtitle: Text('${exercise['category']} • ${exercise['bodyPart']}'),
-            trailing: selectedExercises.contains(exercise['name'])
+            trailing: _selectedExercises.contains(exercise['name'])
                 ? Icon(Icons.check_circle, color: Colors.green)
                 : null,
             onTap: () => _toggleSelection(exercise['name']),
