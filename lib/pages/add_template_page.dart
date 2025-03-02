@@ -1,4 +1,5 @@
 // add_workout_page.dart
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -21,11 +22,15 @@ class _AddTemplatePageState extends State<AddTemplatePage> {
 
   void _saveWorkout() async {
     if (_titleController.text.isEmpty || exercises.isEmpty) return;
-
-    await FirebaseFirestore.instance.collection('workoutTemplates').doc(_titleController.text).set({
+    final user = FirebaseAuth.instance.currentUser;
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user!.uid)
+        .collection('workoutTemplates') // Store under user's templates
+        .doc(_titleController.text) // Use template name as document ID
+        .set({
       'title': _titleController.text,
-      'lastPerformed': 'Never',
-      'exercises': exercises,
+      'exercises': exercises, // Store exercises inside the template
     });
     Navigator.pop(context);
   }

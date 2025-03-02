@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -27,9 +28,12 @@ class _DefineExercisePageState extends State<DefineExercisePage> {
     String exerciseName = _nameController.text.trim(); // Get exercise name
 
     try {
+      final user = FirebaseAuth.instance.currentUser;
       await FirebaseFirestore.instance
-          .collection('exercises')
-          .doc(exerciseName) // Use exercise name as document ID
+          .collection('users') // Go inside the users collection
+          .doc(user!.uid) // Store under the logged-in user's UID
+          .collection('exercises') // Save exercises inside user's exercises collection
+          .doc(exerciseName) // Use exercise name as document ID instead of random ID
           .set({
         'name': exerciseName,
         'category': _selectedCategory,

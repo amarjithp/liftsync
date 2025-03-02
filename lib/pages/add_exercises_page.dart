@@ -1,6 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'define_exercise_page.dart';
 
 
@@ -23,7 +23,15 @@ class _AddExercisesPageState extends State<AddExercisesPage> {
   }
 
   void _fetchExercises() async {
-    final snapshot = await FirebaseFirestore.instance.collection('exercises').get();
+    final user = FirebaseAuth.instance.currentUser; // Get the logged-in user
+    if (user == null) return; // Safety check
+
+    final snapshot = await FirebaseFirestore.instance
+        .collection('users') // Access users collection
+        .doc(user.uid) // Get the logged-in user's document
+        .collection('exercises') // Fetch exercises specific to that user
+        .get();
+
     setState(() {
       exercises = snapshot.docs.map((doc) => doc.data()).toList();
     });

@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:liftsync/auth/main_page.dart';
+
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -49,12 +51,13 @@ class _ProfilePageState extends State<ProfilePage> {
             children: [
               Text("Signed in as: ${user.email!}"),
               MaterialButton(
-                onPressed: () {
-                  FirebaseAuth.instance.signOut();
-                  Navigator.pushAndRemoveUntil(
+                onPressed: () async {
+                  await FirebaseAuth.instance.signOut();
+                  await FirebaseFirestore.instance.terminate();
+                  await FirebaseFirestore.instance.clearPersistence(); // Clear old user's data
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => MainPage()),
-                        (route) => false, // This removes all previous routes from the stack
                   );
                 },
                 color: Colors.deepPurple[200],

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:liftsync/pages/add_exercises_page.dart';
@@ -49,7 +50,11 @@ class _HomePageState extends State<HomePage> {
           ),
           Expanded(
             child: StreamBuilder(
-              stream: FirebaseFirestore.instance.collection('workoutTemplates').snapshots(),
+              stream: FirebaseFirestore.instance
+                  .collection('users') // Go inside the users collection
+                  .doc(FirebaseAuth.instance.currentUser?.uid) // Get the current user's document
+                  .collection('workoutTemplates') // Fetch only this user's workout templates
+                  .snapshots(),
               builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (!snapshot.hasData) {
                   return Center(child: CircularProgressIndicator());
