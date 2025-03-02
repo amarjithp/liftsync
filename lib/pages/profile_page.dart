@@ -14,34 +14,6 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   final user = FirebaseAuth.instance.currentUser!;
 
-  int _selectedIndex = 0; // Track the selected tab index
-
-  // Function to handle navigation
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-
-    // Add navigation logic here
-    switch (index) {
-      case 0:
-        Navigator.pushReplacementNamed(context, '/profile'); // Stay on Profile
-        break;
-      case 1:
-        Navigator.pushReplacementNamed(context, '/history');
-        break;
-      case 2:
-        Navigator.pushReplacementNamed(context, '/workout'); // Home Page
-        break;
-      case 3:
-        Navigator.pushReplacementNamed(context, '/exercises');
-        break;
-      case 4:
-        Navigator.pushReplacementNamed(context, '/measure');
-        break;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,21 +39,6 @@ class _ProfilePageState extends State<ProfilePage> {
           )
       ),
 
-      // Add Bottom Navigation Bar
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.black, // Change color as needed
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
-          BottomNavigationBarItem(icon: Icon(Icons.history), label: "History"),
-          BottomNavigationBarItem(icon: Icon(Icons.fitness_center), label: "Workout"),
-          BottomNavigationBarItem(icon: Icon(Icons.list), label: "Exercises"),
-          BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: "Measure"),
-        ],
-      ),
     );
   }
 }

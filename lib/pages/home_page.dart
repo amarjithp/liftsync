@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:liftsync/pages/add_template_page.dart';
+import 'package:liftsync/pages/history_page.dart';
 import 'profile_page.dart';
 import 'workout_tracking_page.dart';
 
@@ -97,29 +98,7 @@ class _HomePageState extends State<HomePage> {
           )
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.black, // Change this to any color you prefer
-        selectedItemColor: Colors.blue, // Active tab color
-        unselectedItemColor: Colors.grey,
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
-          BottomNavigationBarItem(icon: Icon(Icons.history), label: "History"),
-          BottomNavigationBarItem(icon: Icon(Icons.fitness_center), label: "Workout"),
-          BottomNavigationBarItem(icon: Icon(Icons.list), label: "Exercises"),
-          BottomNavigationBarItem(icon: Icon(Icons.straighten), label: "Measure"),
-        ],
-        currentIndex: 2,
-        onTap: (index) {
-          switch (index) {
-            case 0:
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ProfilePage()),
-              );
-              break;
-          }
-        },
-      ),
+
     );
   }
 }
