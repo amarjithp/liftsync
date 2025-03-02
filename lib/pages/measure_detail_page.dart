@@ -15,64 +15,81 @@ class _MeasureDetailPageState extends State<MeasureDetailPage> {
   final user = FirebaseAuth.instance.currentUser;
   final TextEditingController _valueController = TextEditingController();
 
-  /// ✅ Save Measurement to Firestore
-  Future<void> _addMeasurement() async {
+  // Mapping each measurement to its corresponding unit
+  final Map<String, String> measurementUnits = {
+    "Weight": "kg",
+    "Body fat percentage": "%",
+    "Caloric intake": "kcal",
+    "Chest": "cm",
+    "Left bicep": "cm",
+    "Right bicep": "cm",
+    "Left forearm": "cm",
+    "Right forearm": "cm",
+    "Waist": "cm",
+    "Hips": "cm",
+    "Left thigh": "cm",
+    "Right thigh": "cm",
+    "Left calf": "cm",
+    "Right calf": "cm"
+  };
+
+  void _addMeasurement() async {
     if (user == null || _valueController.text.isEmpty) return;
 
-    try {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user!.uid)
-          .collection('measurements')
-          .doc(widget.measureName)
-          .collection('history')
-          .add({
-        'value': double.tryParse(_valueController.text) ?? 0,
-        'timestamp': Timestamp.now(),
-      });
+    double? enteredValue = double.tryParse(_valueController.text);
+    if (enteredValue == null) return; // Ensure valid number input
 
-      _valueController.clear();
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
-    }
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user!.uid)
+        .collection('measurements')
+        .doc(widget.measureName)
+        .collection('history')
+        .add({
+      'value': enteredValue, // Save as a number
+      'timestamp': Timestamp.now(),
+    });
+
+    _valueController.clear();
   }
 
   @override
   Widget build(BuildContext context) {
+    final unit = measurementUnits[widget.measureName] ?? ""; // Get unit
+
     return Scaffold(
       appBar: AppBar(title: Text(widget.measureName)),
       body: Column(
         children: [
-          /// 🔹 Input for Adding Measurements
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text("History", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text("History", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 IconButton(
-                  icon: const Icon(Icons.add),
+                  icon: Icon(Icons.add),
                   onPressed: () {
                     showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
-                        title: const Text("Add Measurement"),
+                        title: Text("Add Measurement"),
                         content: TextField(
                           controller: _valueController,
                           keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(labelText: "Enter value"),
+                          decoration: InputDecoration(labelText: "Enter value ($unit)"),
                         ),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.pop(context),
-                            child: const Text("Cancel"),
+                            child: Text("Cancel"),
                           ),
                           TextButton(
                             onPressed: () {
                               _addMeasurement();
                               Navigator.pop(context);
                             },
-                            child: const Text("Save"),
+                            child: Text("Save"),
                           ),
                         ],
                       ),
@@ -82,8 +99,6 @@ class _MeasureDetailPageState extends State<MeasureDetailPage> {
               ],
             ),
           ),
-
-          /// 🔹 Stream to Show Measurement History
           Expanded(
             child: StreamBuilder(
               stream: FirebaseFirestore.instance
@@ -96,14 +111,12 @@ class _MeasureDetailPageState extends State<MeasureDetailPage> {
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
+                  return Center(child: CircularProgressIndicator());
                 }
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return const Center(child: Text("No records found"));
+                  return Center(child: Text("No records found"));
                 }
-
                 final records = snapshot.data!.docs;
-
                 return ListView.builder(
                   itemCount: records.length,
                   itemBuilder: (context, index) {
@@ -112,11 +125,9 @@ class _MeasureDetailPageState extends State<MeasureDetailPage> {
                     final timestamp = (data['timestamp'] as Timestamp).toDate();
                     final formattedDate = DateFormat('dd MMM yyyy, hh:mm a').format(timestamp);
 
-                    return Card(
-                      child: ListTile(
-                        title: Text("$value cm"),
-                        subtitle: Text(formattedDate),
-                      ),
+                    return ListTile(
+                      title: Text("$value $unit", style: const TextStyle(color: Colors.black)),
+                      subtitle: Text(formattedDate, style: TextStyle(color: Colors.black)),
                     );
                   },
                 );

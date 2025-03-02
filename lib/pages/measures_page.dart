@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'measure_detail_page.dart';
+import 'package:liftsync/pages/measure_detail_page.dart';
 
 class MeasuresPage extends StatelessWidget {
   final List<String> measures = [
     "Weight",
-    "Body Fat Percentage",
-    "Caloric Intake",
+    "Body fat percentage",
+    "Caloric intake",
     "Chest",
-    "Left Bicep",
-    "Right Bicep",
-    "Left Forearm"
+    "Left bicep",
+    "Right bicep",
+    "Left forearm",
+    "Right forearm",
+    "Waist",
+    "Hips",
+    "Left thigh",
+    "Right thigh",
+    "Left calf",
+    "Right calf"
   ];
 
   MeasuresPage({super.key});
@@ -18,24 +24,21 @@ class MeasuresPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Measurements")),
+      appBar: AppBar(title: const Text("Measure")),
       body: ListView.builder(
         padding: const EdgeInsets.all(16.0),
         itemCount: measures.length,
         itemBuilder: (context, index) {
-          return Card(
-            child: ListTile(
-              title: Text(measures[index], style: const TextStyle(fontSize: 18)),
-              trailing: const Icon(Icons.arrow_forward_ios),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => MeasureDetailPage(measureName: measures[index]),
-                  ),
-                );
-              },
-            ),
+          return ListTile(
+            title: Text(measures[index], style: TextStyle(fontSize: 18)),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => MeasureDetailPage(measureName: measures[index]),
+                ),
+              );
+            },
           );
         },
       ),
