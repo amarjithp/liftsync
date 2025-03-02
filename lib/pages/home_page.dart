@@ -1,10 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:liftsync/pages/add_exercises_page.dart';
 import 'package:liftsync/pages/add_template_page.dart';
-
 import 'profile_page.dart';
+import 'workout_tracking_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -26,7 +25,12 @@ class _HomePageState extends State<HomePage> {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => WorkoutTrackingPage()),
+                );
+              },
               child: Text("START AN EMPTY WORKOUT"),
             ),
           ),
