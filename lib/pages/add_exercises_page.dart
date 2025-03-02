@@ -78,7 +78,8 @@ class _AddExercisesPageState extends State<AddExercisesPage> {
               Navigator.pop(context, _selectedExercises);
             },
           ),
-        ] :[
+        ]
+            : [
           IconButton(icon: Icon(Icons.search), onPressed: _showSearch),
           IconButton(icon: Icon(Icons.add), onPressed: _navigateToDefineExercise),
         ],
@@ -98,6 +99,7 @@ class _AddExercisesPageState extends State<AddExercisesPage> {
           );
         },
       ),
+
     );
   }
 }

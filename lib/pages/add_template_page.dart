@@ -2,6 +2,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'add_exercises_page.dart';
 
 class AddTemplatePage extends StatefulWidget {
   const AddTemplatePage({super.key});
@@ -14,11 +15,21 @@ class _AddTemplatePageState extends State<AddTemplatePage> {
   final TextEditingController _titleController = TextEditingController();
   List<Map<String, dynamic>> exercises = [];
 
-  void _addExercise() {
-    setState(() {
-      exercises.add({'name': '', 'sets': 1});
-    });
+  void _addExercise() async {
+    final selectedExercises = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => AddExercisesPage()),
+    );
+
+    if (selectedExercises != null && selectedExercises is List<String>) {
+      setState(() {
+        for (var exercise in selectedExercises) {
+          exercises.add({'name': exercise, 'sets': 1});
+        }
+      });
+    }
   }
+
 
   void _saveWorkout() async {
     if (_titleController.text.isEmpty || exercises.isEmpty) return;
@@ -60,10 +71,7 @@ class _AddTemplatePageState extends State<AddTemplatePage> {
                 itemCount: exercises.length,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    title: TextField(
-                      onChanged: (value) => exercises[index]['name'] = value,
-                      decoration: InputDecoration(labelText: 'Exercise Name'),
-                    ),
+                    title: Text(exercises[index]['name']),
                     trailing: DropdownButton<int>(
                       value: exercises[index]['sets'],
                       onChanged: (newValue) {

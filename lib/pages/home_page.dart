@@ -113,11 +113,6 @@ class _HomePageState extends State<HomePage> {
                 MaterialPageRoute(builder: (context) => ProfilePage()),
               );
               break;
-            case 3:
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => AddExercisesPage()),
-              );
           }
         },
       ),
