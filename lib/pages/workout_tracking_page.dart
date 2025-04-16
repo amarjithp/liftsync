@@ -4,26 +4,39 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class WorkoutTrackingPage extends StatefulWidget {
-  const WorkoutTrackingPage({Key? key}) : super(key: key);
+  final List<dynamic>? initialExercises;
+  final String? templateTitle;
+
+  const WorkoutTrackingPage({Key? key, this.initialExercises, this.templateTitle}) : super(key: key);
 
   @override
   _WorkoutTrackingPageState createState() => _WorkoutTrackingPageState();
 }
 
 class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
-  List<Map<String, dynamic>> exercises = []; // Stores selected exercises
+  List<Map<String, dynamic>> exercises = [];
   bool isMinimized = false;
   DateTime startTime = DateTime.now();
   Duration elapsedTime = Duration.zero;
   late final Stopwatch stopwatch;
   late final User? user;
-  TextEditingController _workoutTitleController = TextEditingController(text: "Untitled Workout");
+  late TextEditingController _workoutTitleController;
 
   @override
   void initState() {
     super.initState();
     stopwatch = Stopwatch()..start();
     user = FirebaseAuth.instance.currentUser;
+
+    // 🧠 If template data is passed, initialize with it
+    exercises = widget.initialExercises != null
+        ? List<Map<String, dynamic>>.from(widget.initialExercises!)
+        : [];
+
+    _workoutTitleController = TextEditingController(
+      text: widget.templateTitle ?? "Untitled Workout",
+    );
+
     _startTimer();
   }
 
@@ -38,7 +51,6 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
     });
   }
 
-  // 🚀 Handle Add Exercise Button Click
   Future<void> _navigateToAddExercises() async {
     final selectedExerciseNames = await Navigator.push(
       context,
@@ -59,20 +71,18 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
     }
   }
 
-  // 🚀 Add a New Set to an Exercise
   void _addSet(int index) {
     setState(() {
       exercises[index]['sets'].add({
         'kg': '',
         'reps': '',
-        'timer': 120, // Default rest time
+        'timer': 120,
         'previous': '',
         'completed': false,
       });
     });
   }
 
-  // 🚀 Toggle Set Completion & Start Timer for Next Set
   void _toggleSetCompletion(int exerciseIndex, int setIndex) {
     setState(() {
       exercises[exerciseIndex]['sets'][setIndex]['completed'] = true;
@@ -90,20 +100,20 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
     });
   }
 
-  // 🚀 Cancel Workout
   void _cancelWorkout() {
     Navigator.pop(context);
   }
 
-  // 🚀 Save Workout to Firestore
   void _finishWorkout() async {
     if (user == null) return;
+
     FirebaseFirestore.instance.collection('users').doc(user!.uid).collection('workouts').add({
       'workoutName': _workoutTitleController.text.trim(),
       'startTime': startTime,
       'duration': stopwatch.elapsed.inSeconds,
       'exercises': exercises,
     });
+
     Navigator.pop(context);
   }
 
@@ -124,7 +134,7 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Workout Title (Editable)
+          // Editable Title
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: GestureDetector(
@@ -176,7 +186,6 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
             child: Text('${elapsedTime.inMinutes}:${(elapsedTime.inSeconds % 60).toString().padLeft(2, '0')}'),
           ),
 
-          // Buttons
           Padding(
             padding: EdgeInsets.all(16.0),
             child: Row(
@@ -195,7 +204,6 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
             ),
           ),
 
-          // Exercise List
           Expanded(
             child: ListView.builder(
               itemCount: exercises.length,
