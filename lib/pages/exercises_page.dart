@@ -11,7 +11,7 @@ class ExercisesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Your Exercises")),
+      appBar: AppBar(title: const Text("Exercises")),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('users')
