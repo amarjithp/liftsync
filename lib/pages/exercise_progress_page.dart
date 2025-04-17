@@ -63,7 +63,9 @@ class ExerciseProgressPage extends StatelessWidget {
             }
 
             // Sort records by weight (kg), highest first
-            records.sort((a, b) => b['kg'].compareTo(a['kg']));
+            records.sort((a, b) => (double.tryParse(b['kg'].toString()) ?? 0)
+                .compareTo(double.tryParse(a['kg'].toString()) ?? 0));
+
 
             String formatDate(DateTime date) {
               return DateFormat('dd MMM yyyy • hh:mm a').format(date);
