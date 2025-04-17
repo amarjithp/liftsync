@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RegisterPage extends StatefulWidget {
   final VoidCallback showLoginPage;
@@ -24,19 +25,73 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Future signUp() async {
-    if(passwordConfirmed()) {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
+    if (passwordConfirmed()) {
+      try {
+        // Create a new user with email and password
+        UserCredential userCredential = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
+
+        // Once user is created, call the method to copy global exercises
+        _copyGlobalExercisesToUser(userCredential.user?.uid);
+
+      } catch (e) {
+        print("Error during sign up: $e");
+        // Handle error (e.g., show a toast or snackbar)
+      }
     }
   }
 
   bool passwordConfirmed() {
-    if(_passwordController.text.trim() == _confirmpasswordController.text.trim()) {
+    if (_passwordController.text.trim() == _confirmpasswordController.text.trim()) {
       return true;
     } else {
       return false;
+    }
+  }
+
+  // Function to copy global exercises to the user's exercises collection
+  Future<void> _copyGlobalExercisesToUser(String? userId) async {
+    if (userId == null) return;
+
+    var userExercisesRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('exercises');
+
+    // Fetch user's exercises to check if they're already copied
+    var userExercisesSnapshot = await userExercisesRef.get();
+
+    if (userExercisesSnapshot.docs.isEmpty) {
+      try {
+        // Fetch global exercises from the global_exercises collection
+        var globalExercisesSnapshot = await FirebaseFirestore.instance
+            .collection('global_exercises')
+            .get();
+
+        // Prepare a batch write to copy exercises to the user's exercises collection
+        WriteBatch batch = FirebaseFirestore.instance.batch();
+
+        // Add each global exercise to the user's exercises collection
+        for (var doc in globalExercisesSnapshot.docs) {
+          batch.set(
+            userExercisesRef.doc(doc.id), // Use the same ID as the global exercise
+            {
+              'bodyPart': doc['bodyPart'],
+              'category': doc['category'],
+              'name': doc['name'],
+            },
+          );
+        }
+
+        // Commit the batch write
+        await batch.commit();
+        print("Exercises copied successfully!");
+      } catch (e) {
+        print("Error copying exercises: $e");
+      }
     }
   }
 
@@ -56,18 +111,14 @@ class _RegisterPageState extends State<RegisterPage> {
                     fontSize: 52,
                   ),
                 ),
-
-                SizedBox(height: 10,),
-
+                SizedBox(height: 10),
                 Text(
                   "Register Here!",
                   style: TextStyle(
                     fontSize: 20,
                   ),
                 ),
-
-                SizedBox(height: 50,),
-
+                SizedBox(height: 50),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25),
                   child: Container(
@@ -88,9 +139,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ),
                 ),
-
-                SizedBox(height: 10,),
-
+                SizedBox(height: 10),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25),
                   child: Container(
@@ -112,9 +161,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ),
                 ),
-
-                SizedBox(height: 10,),
-
+                SizedBox(height: 10),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25),
                   child: Container(
@@ -136,9 +183,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ),
                 ),
-
-                SizedBox(height: 10,),
-
+                SizedBox(height: 10),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25),
                   child: GestureDetector(
@@ -162,9 +207,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ),
                 ),
-
-                SizedBox(height: 25,),
-
+                SizedBox(height: 25),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -174,7 +217,6 @@ class _RegisterPageState extends State<RegisterPage> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-
                     GestureDetector(
                       onTap: widget.showLoginPage,
                       child: Text(
@@ -187,8 +229,6 @@ class _RegisterPageState extends State<RegisterPage> {
                     )
                   ],
                 )
-
-
               ],
             ),
           ),

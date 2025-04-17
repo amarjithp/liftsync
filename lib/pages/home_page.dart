@@ -2,9 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:liftsync/pages/add_template_page.dart';
-import 'package:liftsync/pages/history_page.dart';
 import 'package:liftsync/pages/template_detail_page.dart'; // 👈 Add this line
-import 'profile_page.dart';
 import 'workout_tracking_page.dart';
 
 class HomePage extends StatefulWidget {
