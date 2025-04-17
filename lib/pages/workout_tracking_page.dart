@@ -108,22 +108,12 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
 
   void _toggleSetCompletion(int exerciseIndex, int setIndex) {
     setState(() {
-      exercises[exerciseIndex]['sets'][setIndex]['completed'] = true;
-
-      if (setIndex + 1 < exercises[exerciseIndex]['sets'].length) {
-        Future.delayed(
-          Duration(seconds: exercises[exerciseIndex]['sets'][setIndex]['timer']),
-              () {
-            if (mounted) {
-              setState(() {
-                exercises[exerciseIndex]['sets'][setIndex + 1]['completed'] = false;
-              });
-            }
-          },
-        );
-      }
+      bool current = exercises[exerciseIndex]['sets'][setIndex]['completed'] ?? false;
+      exercises[exerciseIndex]['sets'][setIndex]['completed'] = !current;
     });
   }
+
+
 
   void _cancelWorkout() {
     Navigator.pop(context);
