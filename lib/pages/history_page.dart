@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
+import 'workout_history_detail_page.dart';
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key});
@@ -51,56 +52,66 @@ class _HistoryPageState extends State<HistoryPage> {
               final String formattedDuration = "${durationInSeconds ~/ 60}m ${durationInSeconds % 60}s";
 
 
-              return Card(
-                color: Colors.grey[900],
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        workoutName,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => WorkoutHistoryDetailPage(workout: workout),
+                    ),
+                  );
+                },
+                child: Card(
+                  color: Colors.grey[900],
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          workoutName,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        formattedDate,
-                        style: TextStyle(color: Colors.grey[400]),
-                      ),
-                      const SizedBox(height: 8),
-                      Column(
-                        children: exercises.map((exercise) {
-                          return Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "${exercise['name']}",
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                              Text(
-                                "${exercise['sets'].length} sets",
-                                style: TextStyle(color: Colors.grey[400]),
-                              ),
-                            ],
-                          );
-                        }).toList(),
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text("$formattedDuration", style: const TextStyle(color: Colors.white)),
-                          Text("$totalSets sets", style: TextStyle(color: Colors.grey[400])),
-                        ],
-                      ),
-                    ],
+                        const SizedBox(height: 4),
+                        Text(
+                          formattedDate,
+                          style: TextStyle(color: Colors.grey[400]),
+                        ),
+                        const SizedBox(height: 8),
+                        Column(
+                          children: exercises.map((exercise) {
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "${exercise['name']}",
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                                Text(
+                                  "${exercise['sets'].length} sets",
+                                  style: TextStyle(color: Colors.grey[400]),
+                                ),
+                              ],
+                            );
+                          }).toList(),
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text("$formattedDuration", style: const TextStyle(color: Colors.white)),
+                            Text("$totalSets sets", style: TextStyle(color: Colors.grey[400])),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );
