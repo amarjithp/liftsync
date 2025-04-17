@@ -28,7 +28,14 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
     user = FirebaseAuth.instance.currentUser;
 
     exercises = widget.initialExercises != null
-        ? List<Map<String, dynamic>>.from(widget.initialExercises!)
+        ? List<Map<String, dynamic>>.from(widget.initialExercises!.map((e) {
+      return {
+        'name': e['name'],
+        'sets': e['sets'] != null
+            ? List<Map<String, dynamic>>.from(e['sets'].map((s) => Map<String, dynamic>.from(s)))
+            : []
+      };
+    }))
         : [];
 
     _workoutTitleController = TextEditingController(
@@ -69,13 +76,21 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
 
   void _addSet(int index) {
     setState(() {
-      exercises[index]['sets'].add({
+      Map<String, dynamic> newSet = {
         'kg': '',
         'reps': '',
         'timer': 120,
         'previous': '',
         'completed': false,
-      });
+      };
+
+      if (exercises[index]['sets'].isNotEmpty) {
+        final lastSet = exercises[index]['sets'].last;
+        newSet['kg'] = lastSet['kg'];
+        newSet['reps'] = lastSet['reps'];
+      }
+
+      exercises[index]['sets'].add(newSet);
     });
   }
 
@@ -155,7 +170,6 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Editable Title
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: GestureDetector(
@@ -258,10 +272,7 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
                               color: Colors.red,
                               alignment: Alignment.centerRight,
                               padding: EdgeInsets.only(right: 20),
-                              child: GestureDetector(
-                                onTap: () => _deleteSet(exerciseIndex, setIndex),
-                                child: Icon(Icons.delete, color: Colors.white),
-                              ),
+                              child: Icon(Icons.delete, color: Colors.white),
                             ),
                             child: Row(
                               children: [
