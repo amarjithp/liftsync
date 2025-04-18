@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'forgot_pw_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -35,9 +35,46 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  Future<void> _copyGlobalExercisesToUser(String? userId) async {
+    if (userId == null) return;
+
+    var userExercisesRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('exercises');
+
+    var userExercisesSnapshot = await userExercisesRef.get();
+
+    if (userExercisesSnapshot.docs.isEmpty) {
+      try {
+        var globalExercisesSnapshot =
+        await FirebaseFirestore.instance.collection('global_exercises').get();
+
+        WriteBatch batch = FirebaseFirestore.instance.batch();
+
+        for (var doc in globalExercisesSnapshot.docs) {
+          batch.set(
+            userExercisesRef.doc(doc.id),
+            {
+              'bodyPart': doc['bodyPart'],
+              'category': doc['category'],
+              'name': doc['name'],
+            },
+          );
+        }
+
+        await batch.commit();
+        print("Exercises copied successfully!");
+      } catch (e) {
+        print("Error copying exercises: $e");
+      }
+    }
+  }
+
   Future<void> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
       if (googleUser == null) {
         return; // user cancelled the login
       }
@@ -49,6 +86,15 @@ class _LoginPageState extends State<LoginPage> {
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
+
+      UserCredential userCredential =
+      await FirebaseAuth.instance.signInWithCredential(credential);
+
+      // Get the user UID
+      User? user = userCredential.user;
+
+      // ✅ Copy global exercises to user
+      _copyGlobalExercisesToUser(user?.uid);
 
       await FirebaseAuth.instance.signInWithCredential(credential);
     } catch (e) {
