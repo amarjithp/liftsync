@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:liftsync/pages/add_template_page.dart';
-import 'package:liftsync/pages/template_detail_page.dart'; // 👈 Add this line
+import 'package:liftsync/pages/template_detail_page.dart';
 import 'workout_tracking_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -15,43 +15,85 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
+      backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        title: Text("Workout"),
+        backgroundColor: Colors.white,
+        elevation: 1,
+        title: Text(
+          "LiftSync",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+            fontSize: 22,
+          ),
+        ),
+        centerTitle: true,
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SizedBox(height: 20),
+
           Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => WorkoutTrackingPage()),
-                );
-              },
-              child: Text("START AN EMPTY WORKOUT"),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => WorkoutTrackingPage()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: Colors.deepPurple,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 4,
+                ),
+                child: const Text(
+                  "Start an Empty Workout",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
+                ),
+              ),
             ),
           ),
+
+          const SizedBox(height: 30),
+
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("MY TEMPLATES", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                const Text(
+                  "My Templates",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
                 IconButton(
-                  icon: Icon(Icons.add),
                   onPressed: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => AddTemplatePage()),
                     );
                   },
-                )
+                  icon: const Icon(Icons.add_circle, color: Colors.deepPurple, size: 30),
+                  tooltip: "Add Template",
+                ),
               ],
             ),
           ),
+
+          const SizedBox(height: 10),
+
           Expanded(
             child: StreamBuilder(
               stream: FirebaseFirestore.instance
@@ -61,10 +103,22 @@ class _HomePageState extends State<HomePage> {
                   .snapshots(),
               builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (!snapshot.hasData) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 }
-                return ListView(
-                  children: snapshot.data!.docs.map((doc) {
+                if (snapshot.data!.docs.isEmpty) {
+                  return const Center(
+                    child: Text(
+                      "No templates yet.\nTap + to create your first!",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.grey, fontSize: 16),
+                    ),
+                  );
+                }
+                return ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  itemCount: snapshot.data!.docs.length,
+                  itemBuilder: (context, index) {
+                    var doc = snapshot.data!.docs[index];
                     var data = doc.data() as Map<String, dynamic>;
                     List<dynamic> exercises = data['exercises'] ?? [];
 
@@ -78,25 +132,42 @@ class _HomePageState extends State<HomePage> {
                         );
                       },
                       child: Card(
-                        margin: EdgeInsets.all(8.0),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        color: Colors.white,
+                        elevation: 3,
+                        margin: const EdgeInsets.symmetric(vertical: 8),
                         child: Padding(
-                          padding: const EdgeInsets.all(12.0),
+                          padding: const EdgeInsets.all(16.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                data['title'],
-                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                data['title'] ?? "Untitled",
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
                               ),
+                              const SizedBox(height: 4),
                               Text(
-                                "Last performed: ${data['lastPerformed']}",
-                                style: TextStyle(color: Colors.grey),
+                                "Last performed: ${data['lastPerformed'] ?? 'Never'}",
+                                style: const TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 14,
+                                ),
                               ),
-                              SizedBox(height: 8.0),
+                              const SizedBox(height: 12),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: exercises.map((exercise) {
-                                  return Text("${exercise['sets']} × ${exercise['name']}");
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 4),
+                                    child: Text(
+                                      "${exercise['sets']} × ${exercise['name']}",
+                                      style: const TextStyle(fontSize: 14),
+                                    ),
+                                  );
                                 }).toList(),
                               )
                             ],
@@ -104,11 +175,11 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                     );
-                  }).toList(),
+                  },
                 );
               },
             ),
-          )
+          ),
         ],
       ),
     );
