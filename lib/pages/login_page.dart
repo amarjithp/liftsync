@@ -79,7 +79,7 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "Hello Again!",
+                  "LiftSync",
                   style: GoogleFonts.bebasNeue(
                     fontSize: 52,
                   ),
@@ -88,7 +88,7 @@ class _LoginPageState extends State<LoginPage> {
                 SizedBox(height: 10),
 
                 Text(
-                  "Welcome back!",
+                  "Your Strength, Synced.",
                   style: TextStyle(
                     fontSize: 20,
                   ),

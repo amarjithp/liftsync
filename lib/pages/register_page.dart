@@ -109,7 +109,7 @@ class _RegisterPageState extends State<RegisterPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "Hello There!",
+                  "LiftSync",
                   style: GoogleFonts.bebasNeue(fontSize: 52),
                 ),
                 SizedBox(height: 10),
