@@ -17,7 +17,21 @@ class _HistoryPageState extends State<HistoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("History")),
+      backgroundColor: Colors.grey[100],
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 1,
+        title: const Text(
+          "Workout History",
+          style: TextStyle(
+            color: Colors.black87,
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
+        ),
+        centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.black),
+      ),
       body: user == null
           ? const Center(child: Text("No user logged in"))
           : StreamBuilder(
@@ -32,10 +46,16 @@ class _HistoryPageState extends State<HistoryPage> {
             return const Center(child: CircularProgressIndicator());
           }
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(child: Text("No workouts found"));
+            return const Center(
+              child: Text(
+                "No workouts found",
+                style: TextStyle(fontSize: 16, color: Colors.grey),
+              ),
+            );
           }
 
           final workouts = snapshot.data!.docs;
+
           return ListView.builder(
             padding: const EdgeInsets.all(16.0),
             itemCount: workouts.length,
@@ -43,14 +63,11 @@ class _HistoryPageState extends State<HistoryPage> {
               final workout = workouts[index].data();
               final workoutName = workout['workoutName'] ?? "Untitled Workout";
               final timestamp = workout['startTime'] as Timestamp;
-              final formattedDate = timestamp is Timestamp
-                  ? DateFormat('EEEE, d MMMM yyyy, hh:mm a').format(timestamp.toDate())
-                  : "Unknown Date";
+              final formattedDate = DateFormat('d MMM yyyy • hh:mm a').format(timestamp.toDate());
               final exercises = List<Map<String, dynamic>>.from(workout['exercises'] ?? []);
               final totalSets = exercises.fold(0, (sum, e) => sum + ((e['sets'].length ?? 0) as int));
               final int durationInSeconds = (workout['duration'] ?? 0) as int;
               final String formattedDuration = "${durationInSeconds ~/ 60}m ${durationInSeconds % 60}s";
-
 
               return GestureDetector(
                 onTap: () {
@@ -62,12 +79,14 @@ class _HistoryPageState extends State<HistoryPage> {
                   );
                 },
                 child: Card(
-                  color: Colors.grey[900],
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.0),
+                    borderRadius: BorderRadius.circular(16.0),
                   ),
+                  color: Colors.white,
+                  elevation: 4,
+                  margin: const EdgeInsets.symmetric(vertical: 10),
                   child: Padding(
-                    padding: const EdgeInsets.all(12.0),
+                    padding: const EdgeInsets.all(16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -76,40 +95,76 @@ class _HistoryPageState extends State<HistoryPage> {
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: Colors.black87,
                           ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           formattedDate,
-                          style: TextStyle(color: Colors.grey[400]),
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey,
+                          ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 12),
                         Column(
                           children: exercises.map((exercise) {
-                            return Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "${exercise['name']}",
-                                  style: const TextStyle(color: Colors.white),
-                                ),
-                                Text(
-                                  "${exercise['sets'].length} sets",
-                                  style: TextStyle(color: Colors.grey[400]),
-                                ),
-                              ],
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 4.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    exercise['name'],
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                  Text(
+                                    "${exercise['sets'].length} sets",
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             );
                           }).toList(),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 12),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text("$formattedDuration", style: const TextStyle(color: Colors.white)),
-                            Text("$totalSets sets", style: TextStyle(color: Colors.grey[400])),
+                            Row(
+                              children: [
+                                const Icon(Icons.timer, size: 18, color: Colors.deepPurple),
+                                const SizedBox(width: 4),
+                                Text(
+                                  formattedDuration,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                const Icon(Icons.fitness_center, size: 18, color: Colors.deepPurple),
+                                const SizedBox(width: 4),
+                                Text(
+                                  "$totalSets sets",
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ],
-                        ),
+                        )
                       ],
                     ),
                   ),
