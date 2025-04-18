@@ -1,4 +1,3 @@
-// add_workout_page.dart
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -30,67 +29,138 @@ class _AddTemplatePageState extends State<AddTemplatePage> {
     }
   }
 
-
   void _saveWorkout() async {
     if (_titleController.text.isEmpty || exercises.isEmpty) return;
     final user = FirebaseAuth.instance.currentUser;
     await FirebaseFirestore.instance
         .collection('users')
         .doc(user!.uid)
-        .collection('workoutTemplates') // Store under user's templates
-        .doc(_titleController.text) // Use template name as document ID
+        .collection('workoutTemplates')
+        .doc(_titleController.text)
         .set({
       'title': _titleController.text,
-      'exercises': exercises, // Store exercises inside the template
+      'exercises': exercises,
     });
     Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
+      backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        title: Text('Add Workout Template'),
+        backgroundColor: Colors.white,
+        elevation: 1,
+        iconTheme: const IconThemeData(color: Colors.black87),
+        title: const Text(
+          'Add Workout Template',
+          style: TextStyle(
+            color: Colors.black87,
+            fontWeight: FontWeight.w600,
+            fontSize: 18,
+          ),
+        ),
         actions: [
           IconButton(
-            icon: Icon(Icons.check),
+            icon: const Icon(Icons.check, color: Colors.deepPurple),
             onPressed: _saveWorkout,
-          )
+            tooltip: 'Save Template',
+          ),
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20),
         child: Column(
           children: [
             TextField(
               controller: _titleController,
-              decoration: InputDecoration(labelText: 'Workout Template Name'),
+              decoration: InputDecoration(
+                labelText: 'Template Name',
+                labelStyle: const TextStyle(color: Colors.black54),
+                filled: true,
+                fillColor: Colors.white,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.grey),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.deepPurple, width: 2),
+                ),
+              ),
             ),
+            const SizedBox(height: 20),
             Expanded(
-              child: ListView.builder(
+              child: exercises.isEmpty
+                  ? Center(
+                child: Text(
+                  "No exercises added.\nTap the button below to add.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.grey[600], fontSize: 15),
+                ),
+              )
+                  : ListView.builder(
                 itemCount: exercises.length,
                 itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(exercises[index]['name']),
-                    trailing: DropdownButton<int>(
-                      value: exercises[index]['sets'],
-                      onChanged: (newValue) {
-                        setState(() {
-                          exercises[index]['sets'] = newValue!;
-                        });
-                      },
-                      items: List.generate(10, (i) => i + 1)
-                          .map((e) => DropdownMenuItem(value: e, child: Text('$e sets')))
-                          .toList(),
+                  return Card(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 2,
+                    margin: const EdgeInsets.only(bottom: 12),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            exercises[index]['name'],
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                          ),
+                          DropdownButton<int>(
+                            value: exercises[index]['sets'],
+                            underline: const SizedBox(),
+                            onChanged: (newValue) {
+                              setState(() {
+                                exercises[index]['sets'] = newValue!;
+                              });
+                            },
+                            items: List.generate(10, (i) => i + 1)
+                                .map((e) => DropdownMenuItem(
+                              value: e,
+                              child: Text('$e sets'),
+                            ))
+                                .toList(),
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 },
               ),
             ),
-            ElevatedButton(
-              onPressed: _addExercise,
-              child: Text('Add Exercise'),
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _addExercise,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.deepPurple,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Text(
+                      "Add Exercise",
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16),
+                    ),
+                  ],
+                ),
+              ),
             ),
+
           ],
         ),
       ),
