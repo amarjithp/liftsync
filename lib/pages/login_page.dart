@@ -71,78 +71,100 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                // App Name
                 Text(
                   "LiftSync",
                   style: GoogleFonts.bebasNeue(
-                    fontSize: 52,
+                    fontSize: 60,
+                    color: Colors.deepPurple[900],
                   ),
                 ),
 
-                SizedBox(height: 10),
+                SizedBox(height: 15),
 
+                // Slogan
                 Text(
                   "Your Strength, Synced.",
                   style: TextStyle(
                     fontSize: 20,
+                    color: Colors.deepPurple[600],
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
 
-                SizedBox(height: 50),
+                SizedBox(height: 40),
 
+                // Email Input Field
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      border: Border.all(color: Colors.white),
-                      borderRadius: BorderRadius.circular(12),
+                      color: Colors.grey[50],
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.deepPurple.withOpacity(0.2),
+                          blurRadius: 10,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 20),
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: TextField(
                         controller: _emailController,
                         decoration: InputDecoration(
                           border: InputBorder.none,
                           hintText: 'Email',
+                          hintStyle: TextStyle(color: Colors.grey[600]),
                         ),
                       ),
                     ),
                   ),
                 ),
 
-                SizedBox(height: 10),
+                SizedBox(height: 15),
 
+                // Password Input Field
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      border: Border.all(color: Colors.white),
-                      borderRadius: BorderRadius.circular(12),
+                      color: Colors.grey[50],
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.deepPurple.withOpacity(0.2),
+                          blurRadius: 10,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 20),
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: TextField(
                         controller: _passwordController,
                         obscureText: true,
                         decoration: InputDecoration(
                           border: InputBorder.none,
                           hintText: 'Password',
+                          hintStyle: TextStyle(color: Colors.grey[600]),
                         ),
                       ),
                     ),
                   ),
                 ),
 
-                SizedBox(height: 10),
+                SizedBox(height: 15),
 
+                // Forgot Password Text
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25),
                   child: Row(
@@ -161,7 +183,7 @@ class _LoginPageState extends State<LoginPage> {
                           "Forgot password?",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: Colors.deepPurple,
+                            color: Colors.deepPurple[600],
                           ),
                         ),
                       ),
@@ -169,17 +191,25 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
 
-                SizedBox(height: 10),
+                SizedBox(height: 25),
 
+                // Login Button
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25),
                   child: GestureDetector(
                     onTap: signIn,
                     child: Container(
-                      padding: EdgeInsets.all(20),
+                      padding: EdgeInsets.all(18),
                       decoration: BoxDecoration(
-                        color: Colors.deepPurple,
+                        color: Colors.deepPurple[700],
                         borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.deepPurple.withOpacity(0.2),
+                            blurRadius: 12,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
                       ),
                       child: Center(
                         child: Text(
@@ -195,17 +225,25 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
 
-                SizedBox(height: 10),
+                SizedBox(height: 15),
 
+                // Google Sign In Button
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25),
                   child: GestureDetector(
                     onTap: signInWithGoogle,
                     child: Container(
-                      padding: EdgeInsets.all(20),
+                      padding: EdgeInsets.all(18),
                       decoration: BoxDecoration(
-                        color: Colors.deepPurple,
+                        color: Colors.deepPurple[700],
                         borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.deepPurple.withOpacity(0.2),
+                            blurRadius: 12,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
                       ),
                       child: Center(
                         child: Text(
@@ -221,15 +259,17 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
 
-                SizedBox(height: 25),
+                SizedBox(height: 30),
 
+                // Sign Up Text
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       "Don't have an account? ",
                       style: TextStyle(
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.deepPurple[500],
                       ),
                     ),
                     GestureDetector(
@@ -238,12 +278,12 @@ class _LoginPageState extends State<LoginPage> {
                         "Sign Up",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Colors.deepPurple,
+                          color: Colors.deepPurple[700],
                         ),
                       ),
                     ),
                   ],
-                )
+                ),
               ],
             ),
           ),

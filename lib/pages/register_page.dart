@@ -101,121 +101,157 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                // App Title
                 Text(
                   "LiftSync",
-                  style: GoogleFonts.bebasNeue(fontSize: 52),
+                  style: GoogleFonts.bebasNeue(
+                    fontSize: 60,
+                    color: Colors.deepPurple[900],
+                  ),
                 ),
-                SizedBox(height: 10),
+                SizedBox(height: 15),
                 Text(
                   "Register Here!",
-                  style: TextStyle(fontSize: 20),
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: Colors.deepPurple[600],
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
                 SizedBox(height: 50),
 
-                // ✅ Username Text Field
+                // Username Text Field
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      border: Border.all(color: Colors.white),
-                      borderRadius: BorderRadius.circular(12),
+                      color: Colors.grey[50],
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.deepPurple.withOpacity(0.2),
+                          blurRadius: 10,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 20),
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: TextField(
                         controller: _usernameController,
                         decoration: InputDecoration(
                           border: InputBorder.none,
                           hintText: 'Username',
+                          hintStyle: TextStyle(color: Colors.grey[600]),
                         ),
                       ),
                     ),
                   ),
                 ),
 
-                SizedBox(height: 10),
+                SizedBox(height: 15),
 
-                // Email
+                // Email Text Field
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      border: Border.all(color: Colors.white),
-                      borderRadius: BorderRadius.circular(12),
+                      color: Colors.grey[50],
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.deepPurple.withOpacity(0.2),
+                          blurRadius: 10,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 20),
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: TextField(
                         controller: _emailController,
                         decoration: InputDecoration(
                           border: InputBorder.none,
                           hintText: 'Email',
+                          hintStyle: TextStyle(color: Colors.grey[600]),
                         ),
                       ),
                     ),
                   ),
                 ),
 
-                SizedBox(height: 10),
+                SizedBox(height: 15),
 
-                // Password
+                // Password Text Field
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      border: Border.all(color: Colors.white),
-                      borderRadius: BorderRadius.circular(12),
+                      color: Colors.grey[50],
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.deepPurple.withOpacity(0.2),
+                          blurRadius: 10,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 20),
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: TextField(
                         controller: _passwordController,
                         obscureText: true,
                         decoration: InputDecoration(
                           border: InputBorder.none,
                           hintText: 'Password',
+                          hintStyle: TextStyle(color: Colors.grey[600]),
                         ),
                       ),
                     ),
                   ),
                 ),
 
-                SizedBox(height: 10),
+                SizedBox(height: 15),
 
-                // Confirm Password
+                // Confirm Password Text Field
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      border: Border.all(color: Colors.white),
-                      borderRadius: BorderRadius.circular(12),
+                      color: Colors.grey[50],
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.deepPurple.withOpacity(0.2),
+                          blurRadius: 10,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 20),
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: TextField(
                         controller: _confirmpasswordController,
                         obscureText: true,
                         decoration: InputDecoration(
                           border: InputBorder.none,
                           hintText: 'Confirm your password',
+                          hintStyle: TextStyle(color: Colors.grey[600]),
                         ),
                       ),
                     ),
                   ),
                 ),
 
-                SizedBox(height: 10),
+                SizedBox(height: 25),
 
                 // Sign Up Button
                 Padding(
@@ -227,6 +263,13 @@ class _RegisterPageState extends State<RegisterPage> {
                       decoration: BoxDecoration(
                         color: Colors.deepPurple,
                         borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.deepPurple.withOpacity(0.2),
+                            blurRadius: 12,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
                       ),
                       child: Center(
                         child: Text(
@@ -244,6 +287,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                 SizedBox(height: 25),
 
+                // Already Have an Account Text
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

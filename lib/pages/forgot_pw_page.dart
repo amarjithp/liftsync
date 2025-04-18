@@ -33,12 +33,12 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     } on FirebaseAuthException catch (e) {
       print(e);
       showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              content: Text(e.message.toString()),
-            );
-          },
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Text(e.message.toString()),
+          );
+        },
       );
     }
   }
@@ -46,53 +46,92 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        backgroundColor: Colors.deepPurple[200],
+        backgroundColor: Colors.deepPurple[300],
         elevation: 0,
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 25),
-            child: Text(
-              "Enter your email and we'll send you a password reset link if the entered email is linked to an account"
-                  ".",
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 20),
-            ),
+        title: Text(
+          "Forgot Password",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 24,
+            color: Colors.white,
           ),
-          SizedBox(height: 10,),
-
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 25),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                border: Border.all(color: Colors.white),
-                borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 25.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Enter your email, and we will send you a link to reset your password.",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.black87,
+                height: 1.5,
               ),
-              child: Padding(
-                padding: const EdgeInsets.only(left: 20),
-                child: TextField(
-                  controller: _emailController,
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: 'Email',
+            ),
+            SizedBox(height: 30),
+
+            // Email TextField
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.2),
+                    blurRadius: 8,
+                    spreadRadius: 4,
+                    offset: Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: TextField(
+                controller: _emailController,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: 'Enter your email',
+                  contentPadding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+
+            // Reset Password Button
+            GestureDetector(
+              onTap: passwordReset,
+              child: Container(
+                height: 55,
+                decoration: BoxDecoration(
+                  color: Colors.deepPurple[400],
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.deepPurple.withOpacity(0.2),
+                      blurRadius: 8,
+                      spreadRadius: 4,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: Text(
+                    "Reset Password",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-
-          SizedBox(height: 10,),
-          
-          MaterialButton(
-            onPressed: passwordReset,
-            color: Colors.deepPurple[200],
-            child: Text("Reset Password"),
-          )
-        ],
+          ],
+        ),
       ),
     );
   }
