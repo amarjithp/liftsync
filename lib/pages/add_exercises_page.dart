@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'define_exercise_page.dart';
 
-
 class AddExercisesPage extends StatefulWidget {
   const AddExercisesPage({super.key});
 
@@ -15,7 +14,6 @@ class _AddExercisesPageState extends State<AddExercisesPage> {
   List<Map<String, dynamic>> exercises = [];
   List<String> _selectedExercises = [];
 
-
   @override
   void initState() {
     super.initState();
@@ -23,13 +21,13 @@ class _AddExercisesPageState extends State<AddExercisesPage> {
   }
 
   void _fetchExercises() async {
-    final user = FirebaseAuth.instance.currentUser; // Get the logged-in user
-    if (user == null) return; // Safety check
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
 
     final snapshot = await FirebaseFirestore.instance
-        .collection('users') // Access users collection
-        .doc(user.uid) // Get the logged-in user's document
-        .collection('exercises') // Fetch exercises specific to that user
+        .collection('users')
+        .doc(user.uid)
+        .collection('exercises')
         .get();
 
     setState(() {
@@ -52,7 +50,7 @@ class _AddExercisesPageState extends State<AddExercisesPage> {
       context,
       MaterialPageRoute(builder: (context) => DefineExercisePage()),
     );
-    _fetchExercises(); // Refresh list after adding new exercise
+    _fetchExercises();
   }
 
   void _showSearch() async {
@@ -60,46 +58,112 @@ class _AddExercisesPageState extends State<AddExercisesPage> {
       context: context,
       delegate: ExerciseSearchDelegate(exercises),
     );
-    if (result != null) {
-      print('Selected exercise: $result');
-    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
+      backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        title: Text('Add Exercises'),
+        elevation: 1,
+        backgroundColor: Colors.white,
+        iconTheme: const IconThemeData(color: Colors.deepPurple),
+        title: const Text(
+          'Add Exercises',
+          style: TextStyle(
+            color: Colors.black87,
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
+        ),
         actions: _selectedExercises.isNotEmpty
             ? [
           IconButton(
-            icon: Icon(Icons.check),
+            icon: const Icon(Icons.check, color: Colors.deepPurple),
             onPressed: () {
               Navigator.pop(context, _selectedExercises);
             },
           ),
         ]
             : [
-          IconButton(icon: Icon(Icons.search), onPressed: _showSearch),
-          IconButton(icon: Icon(Icons.add), onPressed: _navigateToDefineExercise),
+          IconButton(
+            icon: const Icon(Icons.search, color: Colors.deepPurple),
+            onPressed: _showSearch,
+          ),
+          IconButton(
+            icon: const Icon(Icons.add_circle_outline, color: Colors.deepPurple),
+            onPressed: _navigateToDefineExercise,
+          ),
         ],
       ),
-      body: ListView.builder(
+      body: exercises.isEmpty
+          ? const Center(
+        child: CircularProgressIndicator(),
+      )
+          : ListView.builder(
+        padding: const EdgeInsets.all(16),
         itemCount: exercises.length,
         itemBuilder: (context, index) {
           final exercise = exercises[index];
-          return ListTile(
-            leading: Icon(Icons.fitness_center),
-            title: Text(exercise['name']),
-            subtitle: Text('${exercise['category']} • ${exercise['bodyPart']}'),
-            trailing: _selectedExercises.contains(exercise['name'])
-                ? Icon(Icons.check_circle, color: Colors.green)
-                : null,
+          final isSelected = _selectedExercises.contains(exercise['name']);
+
+          return GestureDetector(
             onTap: () => _toggleSelection(exercise['name']),
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(
+                  color: isSelected ? Colors.deepPurple : Colors.grey.shade300,
+                  width: isSelected ? 2 : 1,
+                ),
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.fitness_center, color: Colors.deepPurple),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          exercise['name'],
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '${exercise['category']} • ${exercise['bodyPart']}',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (isSelected)
+                    const Icon(Icons.check_circle, color: Colors.green),
+                ],
+              ),
+            ),
           );
         },
       ),
-
     );
   }
 }
@@ -111,12 +175,12 @@ class ExerciseSearchDelegate extends SearchDelegate<String> {
 
   @override
   List<Widget> buildActions(BuildContext context) {
-    return [IconButton(icon: Icon(Icons.clear), onPressed: () => query = '')];
+    return [IconButton(icon: const Icon(Icons.clear), onPressed: () => query = '')];
   }
 
   @override
   Widget buildLeading(BuildContext context) {
-    return IconButton(icon: Icon(Icons.arrow_back), onPressed: () => close(context, ''));
+    return IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => close(context, ''));
   }
 
   @override
@@ -125,13 +189,20 @@ class ExerciseSearchDelegate extends SearchDelegate<String> {
   Widget buildSuggestions(BuildContext context) => _buildList();
 
   Widget _buildList() {
-    final filtered = exercises.where((e) => e['name'].toLowerCase().contains(query.toLowerCase())).toList();
+    final filtered = exercises
+        .where((e) => e['name'].toLowerCase().contains(query.toLowerCase()))
+        .toList();
+
     return ListView.builder(
       itemCount: filtered.length,
       itemBuilder: (context, index) {
         final exercise = filtered[index];
         return ListTile(
-          title: Text(exercise['name']),
+          leading: const Icon(Icons.fitness_center, color: Colors.deepPurple),
+          title: Text(
+            exercise['name'],
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
           subtitle: Text('${exercise['category']} • ${exercise['bodyPart']}'),
           onTap: () => close(context, exercise['name']),
         );
