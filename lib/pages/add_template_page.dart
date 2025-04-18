@@ -105,6 +105,7 @@ class _AddTemplatePageState extends State<AddTemplatePage> {
                 itemCount: exercises.length,
                 itemBuilder: (context, index) {
                   return Card(
+                    color: Colors.white,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     elevation: 2,
                     margin: const EdgeInsets.only(bottom: 12),
