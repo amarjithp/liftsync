@@ -87,155 +87,90 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
+      backgroundColor: Colors.grey[100],
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header with avatar and username
+              // Header
               Row(
                 children: [
                   CircleAvatar(
-                    radius: 30,
-                    backgroundImage: profileImageUrl != null
-                        ? NetworkImage(profileImageUrl!)
-                        : null,
+                    radius: 35,
+                    backgroundColor: Colors.deepPurple.withOpacity(0.1),
+                    backgroundImage: profileImageUrl != null ? NetworkImage(profileImageUrl!) : null,
                     child: profileImageUrl == null
-                        ? const Icon(Icons.person, size: 30)
+                        ? const Icon(Icons.person, size: 32, color: Colors.deepPurple)
                         : null,
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 16),
                   Expanded(
                     child: Text(
                       user.displayName ?? user.email ?? 'User',
                       style: const TextStyle(
                         fontSize: 22,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
                       ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
 
-              // Bio section
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Bio',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  Transform.scale(
-                    scale: 0.7,
-                    child: IconButton(
-                      icon: const Icon(Icons.edit),
-                      onPressed: () {
-                        setState(() {
-                          isEditingBio = true;
-                          bioController.text = bio;
-                        });
-                      },
-                    ),
-                  ),
-                ],
+              const SizedBox(height: 30),
+
+              // Bio Card
+              _buildEditableCard(
+                title: 'Bio',
+                isEditing: isEditingBio,
+                controller: bioController,
+                onEdit: () => setState(() {
+                  isEditingBio = true;
+                  bioController.text = bio;
+                }),
+                onChanged: () {
+                  setState(() {
+                    bioChanged = bioController.text.trim() != bio;
+                  });
+                },
+                onSave: saveBio,
+                contentText: bio,
+                changed: bioChanged,
+                hint: 'Write a short bio...',
               ),
-              if (isEditingBio)
-                TextField(
-                  controller: bioController,
-                  maxLines: 2,
-                  onChanged: (_) {
-                    setState(() {
-                      bioChanged = bioController.text.trim() != bio;
-                    });
-                  },
-                  decoration: const InputDecoration(
-                    hintText: 'Write a short bio...',
-                    border: OutlineInputBorder(),
-                  ),
-                )
-              else
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    bio.isNotEmpty ? bio : 'No bio added.',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              if (isEditingBio && bioChanged)
-                TextButton(
-                  onPressed: saveBio,
-                  child: const Text('Save'),
-                ),
 
               const SizedBox(height: 24),
 
-              // Motivation section
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Motivation',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  Transform.scale(
-                    scale: 0.7,
-                    child: IconButton(
-                      icon: const Icon(Icons.edit),
-                      onPressed: () {
-                        setState(() {
-                          isEditingMotivation = true;
-                          motivationController.text = motivation;
-                        });
-                      },
-                    ),
-                  ),
-                ],
+              // Motivation Card
+              _buildEditableCard(
+                title: 'Motivation',
+                isEditing: isEditingMotivation,
+                controller: motivationController,
+                onEdit: () => setState(() {
+                  isEditingMotivation = true;
+                  motivationController.text = motivation;
+                }),
+                onChanged: () {
+                  setState(() {
+                    motivationChanged = motivationController.text.trim() != motivation;
+                  });
+                },
+                onSave: saveMotivation,
+                contentText: motivation,
+                changed: motivationChanged,
+                hint: 'Write your motivational quote...',
               ),
-              if (isEditingMotivation)
-                TextField(
-                  controller: motivationController,
-                  maxLines: 2,
-                  onChanged: (_) {
-                    setState(() {
-                      motivationChanged =
-                          motivationController.text.trim() != motivation;
-                    });
-                  },
-                  decoration: const InputDecoration(
-                    hintText: 'Write your motivational quote...',
-                    border: OutlineInputBorder(),
-                  ),
-                )
-              else
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    motivation.isNotEmpty
-                        ? motivation
-                        : 'No motivation quote added.',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              if (isEditingMotivation && motivationChanged)
-                TextButton(
-                  onPressed: saveMotivation,
-                  child: const Text('Save'),
-                ),
 
-              const Spacer(),
+              const SizedBox(height: 40),
 
-              // Logout button
+              // Logout Button
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton(
+                child: ElevatedButton.icon(
                   onPressed: () async {
                     await FirebaseAuth.instance.signOut();
                     await FirebaseFirestore.instance.terminate();
@@ -245,15 +180,104 @@ class _ProfilePageState extends State<ProfilePage> {
                       MaterialPageRoute(builder: (context) => const MainPage()),
                     );
                   },
+                  icon: const Icon(Icons.logout, color: Colors.white),
+                  label: const Text('Log Out', style: TextStyle(fontSize: 16)),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.redAccent,
                     padding: const EdgeInsets.symmetric(vertical: 16),
+                    backgroundColor: Colors.redAccent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 2,
                   ),
-                  child: const Text('Log Out'),
                 ),
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEditableCard({
+    required String title,
+    required bool isEditing,
+    required TextEditingController controller,
+    required VoidCallback onEdit,
+    required VoidCallback onChanged,
+    required VoidCallback onSave,
+    required String contentText,
+    required bool changed,
+    required String hint,
+  }) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Title row
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black87,
+                    )),
+                IconButton(
+                  icon: const Icon(Icons.edit, size: 20),
+                  onPressed: onEdit,
+                  tooltip: 'Edit $title',
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            // Text content or textfield
+            isEditing
+                ? TextField(
+              controller: controller,
+              maxLines: 3,
+              onChanged: (_) => onChanged(),
+              decoration: InputDecoration(
+                hintText: hint,
+                filled: true,
+                fillColor: Colors.grey[100],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                    vertical: 12, horizontal: 12),
+              ),
+            )
+                : Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Text(
+                contentText.isNotEmpty
+                    ? contentText
+                    : 'No ${title.toLowerCase()} added.',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black87,
+                ),
+              ),
+            ),
+            if (isEditing && changed)
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: onSave,
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.deepPurple,
+                  ),
+                  child: const Text('Save'),
+                ),
+              )
+          ],
         ),
       ),
     );
