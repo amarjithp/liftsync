@@ -21,7 +21,7 @@ class _ProfilePageState extends State<ProfilePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("Signed in as: ${user.email!}"),
+              Text("Signed in as: ${user.displayName!}"),
               MaterialButton(
                 onPressed: () async {
                   await FirebaseAuth.instance.signOut();

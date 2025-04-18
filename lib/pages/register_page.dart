@@ -15,44 +15,53 @@ class _RegisterPageState extends State<RegisterPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmpasswordController = TextEditingController();
+  final _usernameController = TextEditingController(); // ✅ Added
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmpasswordController.dispose();
+    _usernameController.dispose(); // ✅ Added
     super.dispose();
   }
 
   Future signUp() async {
     if (passwordConfirmed()) {
       try {
-        // Create a new user with email and password
+        // Create user with email and password
         UserCredential userCredential = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
 
-        // Once user is created, call the method to copy global exercises
-        _copyGlobalExercisesToUser(userCredential.user?.uid);
+        User? user = userCredential.user;
 
+        if (user != null) {
+          // ✅ Store username in Firestore
+          await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+            'email': _emailController.text.trim(),
+            'username': _usernameController.text.trim(),
+          });
+
+          // ✅ Optionally update displayName in Firebase Auth profile
+          await user.updateDisplayName(_usernameController.text.trim());
+        }
+
+        // ✅ Copy global exercises to user
+        _copyGlobalExercisesToUser(user?.uid);
       } catch (e) {
         print("Error during sign up: $e");
-        // Handle error (e.g., show a toast or snackbar)
       }
     }
   }
 
   bool passwordConfirmed() {
-    if (_passwordController.text.trim() == _confirmpasswordController.text.trim()) {
-      return true;
-    } else {
-      return false;
-    }
+    return _passwordController.text.trim() ==
+        _confirmpasswordController.text.trim();
   }
 
-  // Function to copy global exercises to the user's exercises collection
   Future<void> _copyGlobalExercisesToUser(String? userId) async {
     if (userId == null) return;
 
@@ -61,23 +70,18 @@ class _RegisterPageState extends State<RegisterPage> {
         .doc(userId)
         .collection('exercises');
 
-    // Fetch user's exercises to check if they're already copied
     var userExercisesSnapshot = await userExercisesRef.get();
 
     if (userExercisesSnapshot.docs.isEmpty) {
       try {
-        // Fetch global exercises from the global_exercises collection
-        var globalExercisesSnapshot = await FirebaseFirestore.instance
-            .collection('global_exercises')
-            .get();
+        var globalExercisesSnapshot =
+        await FirebaseFirestore.instance.collection('global_exercises').get();
 
-        // Prepare a batch write to copy exercises to the user's exercises collection
         WriteBatch batch = FirebaseFirestore.instance.batch();
 
-        // Add each global exercise to the user's exercises collection
         for (var doc in globalExercisesSnapshot.docs) {
           batch.set(
-            userExercisesRef.doc(doc.id), // Use the same ID as the global exercise
+            userExercisesRef.doc(doc.id),
             {
               'bodyPart': doc['bodyPart'],
               'category': doc['category'],
@@ -86,7 +90,6 @@ class _RegisterPageState extends State<RegisterPage> {
           );
         }
 
-        // Commit the batch write
         await batch.commit();
         print("Exercises copied successfully!");
       } catch (e) {
@@ -107,18 +110,40 @@ class _RegisterPageState extends State<RegisterPage> {
               children: [
                 Text(
                   "Hello There!",
-                  style: GoogleFonts.bebasNeue(
-                    fontSize: 52,
-                  ),
+                  style: GoogleFonts.bebasNeue(fontSize: 52),
                 ),
                 SizedBox(height: 10),
                 Text(
                   "Register Here!",
-                  style: TextStyle(
-                    fontSize: 20,
-                  ),
+                  style: TextStyle(fontSize: 20),
                 ),
                 SizedBox(height: 50),
+
+                // ✅ Username Text Field
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      border: Border.all(color: Colors.white),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 20),
+                      child: TextField(
+                        controller: _usernameController,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: 'Username',
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                SizedBox(height: 10),
+
+                // Email
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25),
                   child: Container(
@@ -139,7 +164,10 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ),
                 ),
+
                 SizedBox(height: 10),
+
+                // Password
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25),
                   child: Container(
@@ -161,7 +189,10 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ),
                 ),
+
                 SizedBox(height: 10),
+
+                // Confirm Password
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25),
                   child: Container(
@@ -183,7 +214,10 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ),
                 ),
+
                 SizedBox(height: 10),
+
+                // Sign Up Button
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25),
                   child: GestureDetector(
@@ -207,15 +241,15 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ),
                 ),
+
                 SizedBox(height: 25),
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       "Already have an account? ",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     GestureDetector(
                       onTap: widget.showLoginPage,
@@ -226,7 +260,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           color: Colors.deepPurple,
                         ),
                       ),
-                    )
+                    ),
                   ],
                 )
               ],
