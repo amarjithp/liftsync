@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import 'forgot_pw_page.dart';
 
@@ -25,10 +26,35 @@ class _LoginPageState extends State<LoginPage> {
     } on FirebaseAuthException catch (e) {
       String message = 'Invalid email or password';
 
-      // Show error using a Snackbar
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(message),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<void> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      if (googleUser == null) {
+        return; // user cancelled the login
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+      await googleUser.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      await FirebaseAuth.instance.signInWithCredential(credential);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Google Sign-In failed"),
           backgroundColor: Colors.red,
         ),
       );
@@ -58,18 +84,18 @@ class _LoginPageState extends State<LoginPage> {
                     fontSize: 52,
                   ),
                 ),
-            
-                SizedBox(height: 10,),
-            
+
+                SizedBox(height: 10),
+
                 Text(
                   "Welcome back!",
                   style: TextStyle(
                     fontSize: 20,
                   ),
                 ),
-            
-                SizedBox(height: 50,),
-            
+
+                SizedBox(height: 50),
+
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25),
                   child: Container(
@@ -90,9 +116,9 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
-            
-                SizedBox(height: 10,),
-            
+
+                SizedBox(height: 10),
+
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25),
                   child: Container(
@@ -114,8 +140,8 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
-            
-                SizedBox(height: 10,),
+
+                SizedBox(height: 10),
 
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25),
@@ -125,12 +151,10 @@ class _LoginPageState extends State<LoginPage> {
                       GestureDetector(
                         onTap: () {
                           Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) {
-                                    return ForgotPasswordPage();
-                                  },
-                              ),
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ForgotPasswordPage(),
+                            ),
                           );
                         },
                         child: Text(
@@ -145,7 +169,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
 
-                SizedBox(height: 10,),
+                SizedBox(height: 10),
 
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25),
@@ -159,7 +183,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       child: Center(
                         child: Text(
-                          "Sign In",
+                          "Login",
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -170,9 +194,35 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
-            
-                SizedBox(height: 25,),
-            
+
+                SizedBox(height: 10),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25),
+                  child: GestureDetector(
+                    onTap: signInWithGoogle,
+                    child: Container(
+                      padding: EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.deepPurple,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Center(
+                        child: Text(
+                          "Sign In with Google",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                SizedBox(height: 25),
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -182,7 +232,6 @@ class _LoginPageState extends State<LoginPage> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-            
                     GestureDetector(
                       onTap: widget.showRegisterPage,
                       child: Text(
@@ -192,11 +241,9 @@ class _LoginPageState extends State<LoginPage> {
                           color: Colors.deepPurple,
                         ),
                       ),
-                    )
+                    ),
                   ],
                 )
-            
-            
               ],
             ),
           ),
