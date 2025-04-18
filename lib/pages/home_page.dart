@@ -150,13 +150,7 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               ),
                               const SizedBox(height: 4),
-                              Text(
-                                "Last performed: ${data['lastPerformed'] ?? 'Never'}",
-                                style: const TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 14,
-                                ),
-                              ),
+
                               const SizedBox(height: 12),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
