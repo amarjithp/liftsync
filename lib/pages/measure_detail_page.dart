@@ -15,7 +15,6 @@ class _MeasureDetailPageState extends State<MeasureDetailPage> {
   final user = FirebaseAuth.instance.currentUser;
   final TextEditingController _valueController = TextEditingController();
 
-  // Mapping each measurement to its corresponding unit
   final Map<String, String> measurementUnits = {
     "Weight": "kg",
     "Body fat percentage": "%",
@@ -37,7 +36,7 @@ class _MeasureDetailPageState extends State<MeasureDetailPage> {
     if (user == null || _valueController.text.isEmpty) return;
 
     double? enteredValue = double.tryParse(_valueController.text);
-    if (enteredValue == null) return; // Ensure valid number input
+    if (enteredValue == null) return;
 
     await FirebaseFirestore.instance
         .collection('users')
@@ -46,7 +45,7 @@ class _MeasureDetailPageState extends State<MeasureDetailPage> {
         .doc(widget.measureName)
         .collection('history')
         .add({
-      'value': enteredValue, // Save as a number
+      'value': enteredValue,
       'timestamp': Timestamp.now(),
     });
 
@@ -55,41 +54,72 @@ class _MeasureDetailPageState extends State<MeasureDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final unit = measurementUnits[widget.measureName] ?? ""; // Get unit
+    final unit = measurementUnits[widget.measureName] ?? "";
 
     return Scaffold(
-      appBar: AppBar(title: Text(widget.measureName)),
+      backgroundColor: Colors.grey[100],
+      appBar: AppBar(
+        title: Text(widget.measureName),
+        backgroundColor: Colors.white,
+        elevation: 1,
+        centerTitle: true,
+        titleTextStyle: const TextStyle(
+          color: Colors.black87,
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
+        ),
+        iconTheme: const IconThemeData(color: Colors.black87),
+      ),
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("History", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                const Text(
+                  "Measurement History",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                ),
                 IconButton(
-                  icon: Icon(Icons.add),
+                  icon: const Icon(Icons.add_circle_outline, size: 28, color: Colors.deepPurple),
                   onPressed: () {
                     showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
-                        title: Text("Add Measurement"),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        title: const Text("Add Measurement"),
                         content: TextField(
                           controller: _valueController,
                           keyboardType: TextInputType.number,
-                          decoration: InputDecoration(labelText: "Enter value ($unit)"),
+                          decoration: InputDecoration(
+                            labelText: "Enter value ($unit)",
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
                         ),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.pop(context),
-                            child: Text("Cancel"),
+                            child: const Text("Cancel"),
                           ),
-                          TextButton(
+                          ElevatedButton(
                             onPressed: () {
                               _addMeasurement();
                               Navigator.pop(context);
                             },
-                            child: Text("Save"),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.deepPurple,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            child: const Text("Save", style: TextStyle(color: Colors.white)),
                           ),
                         ],
                       ),
@@ -111,23 +141,62 @@ class _MeasureDetailPageState extends State<MeasureDetailPage> {
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 }
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return Center(child: Text("No records found"));
+                  return const Center(
+                    child: Text(
+                      "No records found.",
+                      style: TextStyle(color: Colors.grey, fontSize: 16),
+                    ),
+                  );
                 }
+
                 final records = snapshot.data!.docs;
-                return ListView.builder(
+
+                return ListView.separated(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   itemCount: records.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 12),
                   itemBuilder: (context, index) {
                     final data = records[index].data();
                     final value = data['value'] ?? "N/A";
                     final timestamp = (data['timestamp'] as Timestamp).toDate();
                     final formattedDate = DateFormat('dd MMM yyyy, hh:mm a').format(timestamp);
 
-                    return ListTile(
-                      title: Text("$value $unit", style: const TextStyle(color: Colors.black)),
-                      subtitle: Text(formattedDate, style: TextStyle(color: Colors.black)),
+                    return Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 6,
+                            offset: Offset(0, 2),
+                          )
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "$value $unit",
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black,
+                            ),
+                          ),
+                          Text(
+                            formattedDate,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
                     );
                   },
                 );

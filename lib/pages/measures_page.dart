@@ -24,13 +24,26 @@ class MeasuresPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Measure")),
+      backgroundColor: Colors.grey[100],
+      appBar: AppBar(
+        title: const Text(
+          "Measurements",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 22,
+            color: Colors.black87,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 1,
+        centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.black87),
+      ),
       body: ListView.builder(
         padding: const EdgeInsets.all(16.0),
         itemCount: measures.length,
         itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(measures[index], style: TextStyle(fontSize: 18)),
+          return GestureDetector(
             onTap: () {
               Navigator.push(
                 context,
@@ -39,6 +52,32 @@ class MeasuresPage extends StatelessWidget {
                 ),
               );
             },
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 6,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: ListTile(
+                title: Text(
+                  measures[index],
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                ),
+                trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 18, color: Colors.deepPurple),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              ),
+            ),
           );
         },
       ),
