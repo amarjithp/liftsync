@@ -4,7 +4,7 @@ import 'exercises_page.dart';
 import 'measures_page.dart';
 import 'profile_page.dart';
 import 'history_page.dart';
-import 'home_page.dart'; // The workout page
+import 'home_page.dart';
 
 class BottomNavScreen extends StatefulWidget {
   const BottomNavScreen({super.key});
@@ -14,7 +14,7 @@ class BottomNavScreen extends StatefulWidget {
 }
 
 class _BottomNavScreenState extends State<BottomNavScreen> {
-  int _selectedIndex = 2; // Default selected tab (Workout Page)
+  int _selectedIndex = 2;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -36,7 +36,7 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
       const ProfilePage(),
       const HistoryPage(),
       const HomePage(),
-      ExercisesPage(uid: uid), // ✅ Fixed: Pass UID properly
+      ExercisesPage(uid: uid),
       MeasuresPage(),
     ];
 
@@ -45,19 +45,59 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
         index: _selectedIndex,
         children: _pages,
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.black,
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
-          BottomNavigationBarItem(icon: Icon(Icons.history), label: "History"),
-          BottomNavigationBarItem(icon: Icon(Icons.fitness_center), label: "Workout"),
-          BottomNavigationBarItem(icon: Icon(Icons.list), label: "Exercises"),
-          BottomNavigationBarItem(icon: Icon(Icons.straighten), label: "Measure"),
-        ],
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 10,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          /*borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
+          ),*/
+          child: BottomNavigationBar(
+            backgroundColor: Colors.white,
+            selectedItemColor: Colors.deepPurple,
+            unselectedItemColor: Colors.grey[500],
+            selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
+            unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500),
+            type: BottomNavigationBarType.fixed,
+            currentIndex: _selectedIndex,
+            onTap: _onItemTapped,
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person_rounded),
+                label: "Profile",
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.history_rounded),
+                label: "History",
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.fitness_center_rounded),
+                label: "Workout",
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.list_alt_rounded),
+                label: "Exercises",
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.straighten_rounded),
+                label: "Measure",
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
