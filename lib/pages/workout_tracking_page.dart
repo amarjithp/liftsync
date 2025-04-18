@@ -113,8 +113,6 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
     });
   }
 
-
-
   void _cancelWorkout() {
     Navigator.pop(context);
   }
@@ -141,34 +139,44 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[100],
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 1,
+        centerTitle: true,
         title: ValueListenableBuilder<Duration>(
           valueListenable: elapsedTimeNotifier,
           builder: (context, elapsedTime, _) {
             return Text(
               '${elapsedTime.inMinutes}:${(elapsedTime.inSeconds % 60).toString().padLeft(2, '0')}',
+              style: TextStyle(color: Colors.black87),
             );
           },
         ),
         actions: [
-          TextButton(
+          TextButton.icon(
             onPressed: _finishWorkout,
-            child: Text("FINISH", style: TextStyle(color: Colors.blue)),
+            icon: Icon(Icons.check, color: Colors.green),
+            label: Text(
+              "Finish",
+              style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+            ),
           ),
         ],
       ),
+
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SizedBox(height: 20),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: GestureDetector(
               onTap: () {
                 showDialog(
                   context: context,
                   builder: (context) {
                     return AlertDialog(
-                      title: Text("Edit Workout Name"),
+                      title: Text("Edit Workout Name", style: TextStyle(color: Colors.black87)),
                       content: TextField(
                         controller: _workoutTitleController,
                         autofocus: true,
@@ -177,14 +185,14 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(context),
-                          child: Text("CANCEL"),
+                          child: const Text("CANCEL"),
                         ),
                         TextButton(
                           onPressed: () {
                             setState(() {});
                             Navigator.pop(context);
                           },
-                          child: Text("SAVE"),
+                          child: const Text("SAVE"),
                         ),
                       ],
                     );
@@ -196,7 +204,7 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
                   Expanded(
                     child: Text(
                       _workoutTitleController.text,
-                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black87),
                     ),
                   ),
                   Icon(Icons.edit, size: 18, color: Colors.grey),
@@ -204,25 +212,7 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
               ),
             ),
           ),
-
-          Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  onPressed: _navigateToAddExercises,
-                  child: Text("ADD EXERCISE"),
-                ),
-                ElevatedButton(
-                  onPressed: _cancelWorkout,
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                  child: Text("CANCEL WORKOUT"),
-                ),
-              ],
-            ),
-          ),
-
+          const SizedBox(height: 20),
           Expanded(
             child: ListView.builder(
               itemCount: exercises.length,
@@ -230,21 +220,26 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
                 final exercise = exercises[exerciseIndex];
 
                 return Card(
-                  margin: EdgeInsets.all(12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  color: Colors.white,
+                  elevation: 3,
+                  margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                   child: Padding(
-                    padding: EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           children: [
                             Expanded(
-                              child: Text(exercise['name'],
-                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                              child: Text(
+                                exercise['name'],
+                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
+                              ),
                             ),
                             IconButton(
                               onPressed: () => _deleteExercise(exerciseIndex),
-                              icon: Icon(Icons.delete, color: Colors.red),
+                              icon: const Icon(Icons.delete, color: Colors.red),
                             ),
                           ],
                         ),
@@ -261,13 +256,13 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
                             background: Container(
                               color: Colors.red,
                               alignment: Alignment.centerRight,
-                              padding: EdgeInsets.only(right: 20),
-                              child: Icon(Icons.delete, color: Colors.white),
+                              padding: const EdgeInsets.only(right: 20),
+                              child: const Icon(Icons.delete, color: Colors.white),
                             ),
                             child: Row(
                               children: [
                                 Text("Set ${setIndex + 1}"),
-                                SizedBox(width: 10),
+                                const SizedBox(width: 10),
                                 Expanded(
                                   child: TextField(
                                     decoration: InputDecoration(labelText: "Kg"),
@@ -277,7 +272,7 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
                                     onChanged: (value) => set['kg'] = value,
                                   ),
                                 ),
-                                SizedBox(width: 10),
+                                const SizedBox(width: 10),
                                 Expanded(
                                   child: TextField(
                                     decoration: InputDecoration(labelText: "Reps"),
@@ -299,13 +294,50 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
                         }).toList(),
                         TextButton(
                           onPressed: () => _addSet(exerciseIndex),
-                          child: Text("ADD SET"),
+                          child: const Text("ADD SET"),
                         ),
                       ],
                     ),
                   ),
                 );
               },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: _navigateToAddExercises,
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                    backgroundColor: Colors.deepPurple,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 4,
+                  ),
+                  child: const Text(
+                    "ADD EXERCISE",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: _cancelWorkout,
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                    backgroundColor: Colors.red,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    "CANCEL WORKOUT",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
