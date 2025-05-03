@@ -13,7 +13,8 @@
 ---
 
 ## **Features**  
-- **Secure Firebase Auth** – Login, Signup & Forgot Password  
+- **Secure Firebase Auth** – Email/Password Login, Signup & Forgot Password  
+- **Sign in with Google** – One-tap login with your Google account  
 - **Workout History with Tap-to-Repeat**  
 - **Track Progress Per Exercise** with visual data  
 - **Log Body Measurements** (weight, arms, fat %, etc.)  
@@ -26,7 +27,7 @@
 ## **Built With**
 
 - **Flutter** – Beautiful, natively compiled applications for mobile  
-- **Firebase Auth** – Easy authentication  
+- **Firebase Auth** – Email & Google Sign-in  
 - **Firebase Firestore** – Scalable NoSQL cloud database  
 - **VS Code** – Developed entirely in Visual Studio Code  
 - **State Management** – (Mention Provider / Riverpod / BLoC if used)
