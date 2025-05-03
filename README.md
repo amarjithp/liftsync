@@ -30,7 +30,7 @@
 - **Firebase Auth** – Email & Google Sign-in  
 - **Firebase Firestore** – Scalable NoSQL cloud database  
 - **VS Code** – Developed entirely in Visual Studio Code  
-- **State Management** – (Mention Provider / Riverpod / BLoC if used)
+
 
 ---
 
